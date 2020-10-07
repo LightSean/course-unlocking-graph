@@ -6,7 +6,7 @@ This application answers the question "After i will finish my course, what cours
 ### Demo
 [Demo on github pages](https://lightsean.github.io/course-unlocking-graph/)
 
-Main packages and projects used:
+### Main packages and projects used:
   - [create-react-app](https://github.com/facebook/create-react-app)
   - [react.js](https://reactjs.org/)
   - [material-ui](https://material-ui.com/)
