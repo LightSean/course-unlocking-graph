@@ -11,7 +11,6 @@ import {
 } from "react-router-dom";
 import { AnimatedSwitch } from 'react-router-transition';
 import Footer from "./components/Footer";
-
 function App() {
     const [dark_mode, setDarkMode] = useState(localStorage.getItem('dark_mode') ? localStorage.getItem('dark_mode')  === 'true' : false);
     const dark_theme = createMuiTheme({
