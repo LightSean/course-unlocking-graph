@@ -1,6 +1,6 @@
 # Kdam Tree Graph
 
-Kdan Tree Graph is A little experiment using React.js with the Mateial-UI framework.
+Kdan Tree Graph is a little experiment using React.js with the Mateial-UI framework.
 This application answers the question "After i will finish my course, what courses can i do?"
 
 ### Demo
