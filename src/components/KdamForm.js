@@ -83,7 +83,7 @@ export function KdamForm(props) {
         }
         if(!ok){
             return;
-        }         
+        }
         history.push(`${process.env.PUBLIC_URL}/tree?num=${courseObj.courseNumber}&allcourses=${all_courses}`)
     }
 
@@ -121,11 +121,14 @@ export function KdamForm(props) {
                                     <MenuItem value={'math'}>מתמטיקה</MenuItem>
                                     <MenuItem value={'physics'}>פיזיקה</MenuItem>
                                     <MenuItem value={'civil'}>הנדסה אזרחית</MenuItem>
-                                    <MenuItem value={'chemical_eng'}>הנדסת חומרים</MenuItem>
+                                    <MenuItem value={'chemical_eng'}>הנדסה כימית</MenuItem>
                                     <MenuItem value={'aviro'}>אווירונאוטיקה וחלל</MenuItem>
                                     <MenuItem value={'mechanical'}>הנדסת מכונות</MenuItem>
                                     <MenuItem value={'chemistry'}>כימיה</MenuItem>
                                     <MenuItem value={'materials'}>הנדסת חומרים</MenuItem>
+                                    <MenuItem value={'bio_and_food_eng'}>הנדסת ביוטכנולוגיה ומזון</MenuItem>
+                                    <MenuItem value={'bio_med'}>הנדסה ביו-רפואית</MenuItem>
+                                    <MenuItem value={'education'}>חינוך למדע וטכנולוגיה</MenuItem>
                                 </Select>
                             </FormControl>
                         </Grid>
