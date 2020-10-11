@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/course-unlocking-graph/static/css/main.5ecd60fb.chunk.css",
-    "main.js": "/course-unlocking-graph/static/js/main.bd67e70f.chunk.js",
-    "main.js.map": "/course-unlocking-graph/static/js/main.bd67e70f.chunk.js.map",
+    "main.js": "/course-unlocking-graph/static/js/main.4a5d8751.chunk.js",
+    "main.js.map": "/course-unlocking-graph/static/js/main.4a5d8751.chunk.js.map",
     "runtime-main.js": "/course-unlocking-graph/static/js/runtime-main.485799f9.js",
     "runtime-main.js.map": "/course-unlocking-graph/static/js/runtime-main.485799f9.js.map",
     "static/js/2.7d405a25.chunk.js": "/course-unlocking-graph/static/js/2.7d405a25.chunk.js",
     "static/js/2.7d405a25.chunk.js.map": "/course-unlocking-graph/static/js/2.7d405a25.chunk.js.map",
     "index.html": "/course-unlocking-graph/index.html",
-    "precache-manifest.c4e4020e7b10f9ab204d256d88006b45.js": "/course-unlocking-graph/precache-manifest.c4e4020e7b10f9ab204d256d88006b45.js",
+    "precache-manifest.799b1bd10727a100cd209e4debe68e2f.js": "/course-unlocking-graph/precache-manifest.799b1bd10727a100cd209e4debe68e2f.js",
     "service-worker.js": "/course-unlocking-graph/service-worker.js",
     "static/css/main.5ecd60fb.chunk.css.map": "/course-unlocking-graph/static/css/main.5ecd60fb.chunk.css.map",
     "static/js/2.7d405a25.chunk.js.LICENSE.txt": "/course-unlocking-graph/static/js/2.7d405a25.chunk.js.LICENSE.txt",
@@ -19,6 +19,6 @@
     "static/js/runtime-main.485799f9.js",
     "static/js/2.7d405a25.chunk.js",
     "static/css/main.5ecd60fb.chunk.css",
-    "static/js/main.bd67e70f.chunk.js"
+    "static/js/main.4a5d8751.chunk.js"
   ]
 }

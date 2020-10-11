@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "b2dad41bc3cd93f8d46bc7f612a7387c",
+    "revision": "b2284b8a6f3aa9162a9e412a69fcdfef",
     "url": "/course-unlocking-graph/index.html"
   },
   {
-    "revision": "c6ce438d0f9c4f8cb336",
+    "revision": "6022b8e79fba8e688db1",
     "url": "/course-unlocking-graph/static/css/main.5ecd60fb.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/course-unlocking-graph/static/js/2.7d405a25.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "c6ce438d0f9c4f8cb336",
-    "url": "/course-unlocking-graph/static/js/main.bd67e70f.chunk.js"
+    "revision": "6022b8e79fba8e688db1",
+    "url": "/course-unlocking-graph/static/js/main.4a5d8751.chunk.js"
   },
   {
     "revision": "aeaf8d48b3fca6f7400a",
