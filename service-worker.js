@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/course-unlocking-graph/precache-manifest.0086642b7595846f33763c92e2ccfd67.js"
+  "/course-unlocking-graph/precache-manifest.c4e4020e7b10f9ab204d256d88006b45.js"
 );
 
 self.addEventListener('message', (event) => {

@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "714112d8d922828baaf701f8ac737aa0",
+    "revision": "b2dad41bc3cd93f8d46bc7f612a7387c",
     "url": "/course-unlocking-graph/index.html"
   },
   {
