@@ -1,4 +1,6 @@
-import coursesData from "../data/coursesData/courseData.json";
+import activeCoursesData from "../data/coursesData/activeCourses.json";
+import allCoursesData from "../data/coursesData/allCourses.json"
+
 const is_fire_fox = typeof InstallTrigger !== 'undefined';
 
 const faculty_prefix_dict = {
@@ -23,7 +25,8 @@ const faculty_prefix_dict = {
     '33': 'bio_med',
 }
 
-let courseNumberToName = (number) => {
+export const courseNumberToName = (number, all_courses = 'false') => {
+    const coursesData = all_courses === 'true' ? allCoursesData : activeCoursesData;
     let prefix = number.substring(0, 2);
     let target_faculty = faculty_prefix_dict[prefix];
     for (const obj of coursesData){
@@ -47,7 +50,8 @@ export function reverseFireFox(name){
     return name.split("").reverse().join("");
 }
 
-export const courseNameToNumber = (name) => {
+export const courseNameToNumber = (name, all_courses = 'false') => {
+    const coursesData = all_courses === 'true' ? allCoursesData : activeCoursesData;
     let corrected_name = reverseFireFox(name);
     for (const obj of coursesData){
         if(!obj.faculty.courses){
@@ -61,7 +65,8 @@ export const courseNameToNumber = (name) => {
     }
 }
 
-function appendTree(data, visited, styles){
+function appendTree(data, visited, styles, all_courses = 'false'){
+    const coursesData = all_courses === 'true' ? allCoursesData : activeCoursesData;
     let finished = [];
     for (const obj of coursesData){
         if(!obj.faculty.courses){
@@ -72,22 +77,22 @@ function appendTree(data, visited, styles){
                 continue;
             }
             for(const kdam of courseItem.kdams){
-                if(String(courseNumberToName(kdam)) === undefined || kdam !== data.number || visited.has(courseItem.courseNumber)){
+                if(String(courseNumberToName(kdam, all_courses)) === undefined || kdam !== data.number || visited.has(courseItem.courseNumber)){
                     continue;
                 }
                 visited.add(courseItem.courseNumber)
-                finished.push({'name': courseNumberToName(courseItem.courseNumber), 'number': courseItem.courseNumber});
+                finished.push({'name': courseNumberToName(courseItem.courseNumber, all_courses), 'number': courseItem.courseNumber});
             }
         }
     }
     let childrenArray = [];
     if(finished.length > 0){
         for(const item of finished){
-            childrenArray.push(appendTree({faculty: data.faculty, number: item.number, optionGroup: item.optionGroup}, visited, {...styles, first_level:false}));
+            childrenArray.push(appendTree({faculty: data.faculty, number: item.number, optionGroup: item.optionGroup}, visited, {...styles, first_level:false}, all_courses));
         }
     }
     return {
-        name: reverseFireFox(courseNumberToName(data.number)),
+        name: reverseFireFox(courseNumberToName(data.number, all_courses)),
         _collapsed: !styles.first_level,
         nodeSvgShape: {
             shape: 'circle',
@@ -102,11 +107,11 @@ function appendTree(data, visited, styles){
     };
 }
 
-export const calculateTree = (number, styles) => {
+export const calculateTree = (number, styles, all_courses = 'false') => {
     let data = {
         number: number
     }
     let visited = new Set();
-    return appendTree(data, visited, {...styles, first_level:true})
+    return appendTree(data, visited, {...styles, first_level:true}, all_courses)
 }
 

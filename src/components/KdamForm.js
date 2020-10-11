@@ -12,7 +12,9 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import {useHistory} from "react-router-dom";
-const courses_data = require('../data/coursesData/courseData.json')
+import {courseNumberToName} from "../utils/TreeBuilder";
+const all_courses_data = require('../data/coursesData/allCourses.json');
+const active_courses_data = require('../data/coursesData/activeCourses.json');
 
 
 const useStyles = makeStyles((theme) => ({
@@ -32,18 +34,21 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+const starter_course_string = 'Please choose faculty';
+const empty_course_obj = {courseName: '', courseNumber: '000000'}
+const starter_course_obj = {courseName: starter_course_string, courseNumber: '000000'}
 
 export function KdamForm(props) {
-    const starter_course = 'Please choose faculty';
     const classes = useStyles();
     const [faculty, setFaculty] = useState('');
-    // const [type_of_search, setTypeOfSearch] = useState('');
-    const [course_list, setCourseList] = useState([{courseName:starter_course, courseNumber:'000000'}])
-    const [courseObj, setCourseObj] = useState({courseName:starter_course, courseNumber:'000000'});
+    const [all_courses, setAllCourses] = useState(false);
+    const [course_list, setCourseList] = useState([starter_course_obj, empty_course_obj])
+    const [courseObj, setCourseObj] = useState(starter_course_obj);
     const [faculty_required, setFacultyRequired] = useState(false);
     const [course_required, setCourseRequired] = useState(false);
     const history = useHistory();
     useEffect(() => {
+        const courses_data = all_courses ? all_courses_data : active_courses_data;
         let faculty_from_list = {};
         if(faculty !== ''){
             let i;
@@ -56,12 +61,14 @@ export function KdamForm(props) {
                             courseNumber: course.courseNumber
                         }
                     })
+                    // res.push(starter_course_obj);
+                    res.push(empty_course_obj);
                     setCourseList(res);
                     break;
                 }
             }
         }
-    }, [faculty]);
+    }, [faculty, all_courses]);
 
     const searchClicked = () => {
         let ok = true;
@@ -76,8 +83,21 @@ export function KdamForm(props) {
         }
         if(!ok){
             return;
+        }         
+        history.push(`${process.env.PUBLIC_URL}/tree?num=${courseObj.courseNumber}&allcourses=${all_courses}`)
+    }
+
+    const changedFacultyOption = (e) => {
+        setFaculty(e.target.value);
+        setCourseObj(empty_course_obj);
+    }
+
+    const changedTypeOfCourses = (e) => {
+        const exists = courseNumberToName(courseObj.courseNumber, !all_courses);
+        if(!exists){
+            setCourseObj(empty_course_obj);
         }
-        history.push(`/tree?num=${courseObj.courseNumber}`)
+        setAllCourses(e.target.value)
     }
 
     return(
@@ -93,7 +113,7 @@ export function KdamForm(props) {
                                 <InputLabel>Faculty</InputLabel>
                                 <Select
                                     value={faculty}
-                                    onChange={(e) => setFaculty(e.target.value)}
+                                    onChange={changedFacultyOption}
                                 >
                                     <MenuItem value={'cs'}>מדעי המחשב</MenuItem>
                                     <MenuItem value={'industrial'}>תעשייה וניהול</MenuItem>
@@ -101,7 +121,6 @@ export function KdamForm(props) {
                                     <MenuItem value={'math'}>מתמטיקה</MenuItem>
                                     <MenuItem value={'physics'}>פיזיקה</MenuItem>
                                     <MenuItem value={'civil'}>הנדסה אזרחית</MenuItem>
-                                    <MenuItem value={'farming_eng'}>הנדסה חקלאית</MenuItem>
                                     <MenuItem value={'chemical_eng'}>הנדסת חומרים</MenuItem>
                                     <MenuItem value={'aviro'}>אווירונאוטיקה וחלל</MenuItem>
                                     <MenuItem value={'mechanical'}>הנדסת מכונות</MenuItem>
@@ -110,21 +129,22 @@ export function KdamForm(props) {
                                 </Select>
                             </FormControl>
                         </Grid>
-                        {/*<Grid item>*/}
-                        {/*    <FormControl className={classes.formControl}>*/}
-                        {/*        <InputLabel>Type of search</InputLabel>*/}
-                        {/*        <Select*/}
-                        {/*            value={type_of_search}*/}
-                        {/*            onChange={(e) => setTypeOfSearch(e.target.value)}*/}
-                        {/*        >*/}
-                        {/*            <MenuItem value={1}>What courses im unlocking</MenuItem>*/}
-                        {/*            <MenuItem value={2}>What courses need for this course</MenuItem>*/}
-                        {/*        </Select>*/}
-                        {/*    </FormControl>*/}
-                        {/*</Grid>*/}
+                        <Grid item>
+                            <FormControl className={classes.formControl}>
+                                <InputLabel>Type of courses</InputLabel>
+                                <Select
+                                    value={all_courses}
+                                    onChange={changedTypeOfCourses}
+                                >
+                                    <MenuItem value={false}>Only active courses</MenuItem>
+                                    <MenuItem value={true}>All courses</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
                         <Grid item>
                             <FormControl error={course_required} required={course_required} className={classes.formControl}>
                                 <Autocomplete
+                                    value={courseObj}
                                     fullWidth={true}
                                     autoHighlight={true}
                                     options={course_list}
@@ -133,9 +153,14 @@ export function KdamForm(props) {
                                         if(val_obj){
                                             setCourseObj(val_obj);
                                         }else{
-                                            setCourseObj({courseName:starter_course, courseNumber:'000000'})
+                                            if(faculty){
+                                                setCourseObj(empty_course_obj)
+                                            }else{
+                                                setCourseObj(starter_course_obj)
+                                            }
                                         }
                                     }}
+                                    getOptionSelected={((option, value) => option.courseName === value.courseName)}
                                     renderInput={(params) => <TextField {...params} label={'Course'} margin="normal"/>}
                                 />
                             </FormControl>

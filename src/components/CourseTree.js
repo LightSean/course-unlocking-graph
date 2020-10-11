@@ -4,7 +4,7 @@ import Tree from 'react-d3-tree';
 import {Button, Container, Typography} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
-import {calculateTree, courseNameToNumber, reverseFireFox} from "../utils/TreeBuilder";
+import {calculateTree, courseNameToNumber, reverseFireFox, courseNumberToName} from "../utils/TreeBuilder";
 import IconButton from '@material-ui/core/IconButton';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
@@ -48,7 +48,6 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1)
     }
-
 }));
 
 export function CourseTree(props) {
@@ -85,7 +84,7 @@ export function CourseTree(props) {
         setCurrentCourseUrl(url);
     }
     const newSearchClicked = () => {
-        history.push('/');
+        history.push(`${process.env.PUBLIC_URL}/`);
     }
     const gotoCourseClicked = () => {
         window.open(current_course_url, "_blank")
@@ -94,7 +93,7 @@ export function CourseTree(props) {
         if(tree_container_ref.current){
             const dimensions = tree_container_ref.current.getBoundingClientRect();
             let width  = dimensions.width / 2;
-            // trick so it will work even if the component width was not changed!
+            // Trick so it will work even if the component width was not changed!
             await setDimensions({
                 x: 30,
                 y: 30
@@ -128,12 +127,20 @@ export function CourseTree(props) {
     useEffect( () => {
         centerTree();
         const parsed = queryString.parse(window.location.search)
-        if(!parsed.num){
+        if(!parsed || !parsed.num){
             alert('problem with getting course number. please choose course again');
-            history.push('/');
+            history.push(`${process.env.PUBLIC_URL}/`);
             return;
         }
-        let res = calculateTree(parsed.num, {});
+        if(!courseNumberToName(parsed.num, parsed.allcourses)){
+            alert('problem with finding course based on course number. please choose course again');
+            history.push(`${process.env.PUBLIC_URL}/`);
+            return;
+        }
+        if(!parsed.allcourses){
+            alert('problem getting type of courses preferences. looking only at active courses by default');
+        }
+        let res = calculateTree(parsed.num, {}, parsed.allcourses);
         setTreeData(res);
         window.addEventListener('resize', centerTree);
     }, [history]);
@@ -252,9 +259,9 @@ export function CourseTree(props) {
                 </Paper>
             </Container>
             <Container maxWidth={'xl'}>
-                <Paper elevation={3} onTouchStart={disableScroll} onTouchEnd={enableScroll}>
+                <Paper elevation={3} onTouchStart={disableScroll} onTouchEnd={enableScroll} ref = {tree_container_ref}>
                     <Grid container className={classes.main_container}>
-                        <Grid item xs={12} className={classes.tree_container} ref = {tree_container_ref}>
+                        <Grid item xs={12} className={classes.tree_container}>
                             <Tree
                                 initialDepth={0}
                                 styles={theme.palette.type === 'dark'? dark_styles : light_styles}

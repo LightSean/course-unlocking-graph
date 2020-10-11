@@ -54,10 +54,10 @@ function App() {
                         atLeave={{ opacity: 0 }}
                         atActive={{ opacity: 1 }}
                     >
-                        <Route path={'/tree'}>
+                        <Route path={`${process.env.PUBLIC_URL}/tree`}>
                             <CourseTree/>
                         </Route>
-                        <Route path={'/'}>
+                        <Route path={`${process.env.PUBLIC_URL}/`}>
                             <Header/>
                             <KdamForm/>
                         </Route>
