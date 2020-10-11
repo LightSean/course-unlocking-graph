@@ -62,6 +62,7 @@ export function CourseTree(props) {
     })
     const [tree_data, setTreeData] = useState({})
     const [current_course, setCurrentCourse] = useState('');
+    const [all_courses, setAllCourses] = useState('false')
     const [current_course_url, setCurrentCourseUrl] = useState('');
     const [zoom, setZoom] = useState(0.8)
     const tree_container_ref = useRef(null);
@@ -78,7 +79,7 @@ export function CourseTree(props) {
         }
     }
     const nodeClicked = (nodeData, evt) => {
-        const course_number = courseNameToNumber(nodeData.name);
+        const course_number = courseNameToNumber(nodeData.name, all_courses);
         const url = `https://ug3.technion.ac.il/rishum/course/${course_number}`;
         setCurrentCourse(reverseFireFox(nodeData.name));
         setCurrentCourseUrl(url);
@@ -140,6 +141,7 @@ export function CourseTree(props) {
         if(!parsed.allcourses){
             alert('problem getting type of courses preferences. looking only at active courses by default');
         }
+        setAllCourses((old) => parsed.allcourses);
         let res = calculateTree(parsed.num, {}, parsed.allcourses);
         setTreeData(res);
         window.addEventListener('resize', centerTree);
