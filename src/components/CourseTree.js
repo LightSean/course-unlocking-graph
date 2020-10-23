@@ -325,7 +325,7 @@ export function CourseTree(props) {
                                     data={tree_data}
                                     orientation={'vertical'}
                                     transitionDuration={0}
-                                    separation={{siblings: 1.9, nonSiblings: 1.5}}
+                                    separation={{siblings: 1.9, nonSiblings: 1.9}}
                                     textLayout={{textAnchor: "start", x: 15, y: 0, transform: undefined }}
                                     collapsible={true}
                                     zoom={zoom}
