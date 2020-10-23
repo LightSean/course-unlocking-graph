@@ -66,6 +66,7 @@ export function CourseTree(props) {
     const [current_course_url, setCurrentCourseUrl] = useState('');
     const [zoom, setZoom] = useState(0.8)
     const [loading, setLoading] = useState(false);
+    const [empty_tree, setEmptyTree] = useState(false);
     const tree_container_ref = useRef(null);
     const main_container_ref = useRef(null);
 
@@ -148,6 +149,17 @@ export function CourseTree(props) {
                 parsed.allcourses = 'false'
             }
             let tree_data = await fetchTree(parsed.num, parsed.allcourses);
+            if(!tree_data){
+                alert('problem with connecting to server. please try again later');
+                history.push(`${process.env.PUBLIC_URL}/`);
+                return;
+            }
+            if(!tree_data.children || tree_data.children.length === 0){
+                const url = `${ug_course_url}/${tree_data.number}`;
+                setCurrentCourse(tree_data.name);
+                setCurrentCourseUrl(url);
+                setEmptyTree(true);
+            }
             let res = buildTree(tree_data, true);
             setTreeData(res);
             window.addEventListener('resize', centerTree);
@@ -242,6 +254,18 @@ export function CourseTree(props) {
         </Grid>
     )
 
+    const EmptyTreeComponent = () => (
+        <Grid item container  justify={'center'} xs={12} className={classes.tree_container}>
+            <Grid item xs={12} style={{marginTop: theme.spacing(1)}}>
+                <div style={{display: 'flex', flexDirection:'column', justifyContent: 'center', justifyItems: 'center'}}>
+                    <Typography style={{marginBottom: theme.spacing(1)}} variant="h5" align="center" color="textPrimary" >
+                        {current_course} is not kdam for anything. try a new search
+                    </Typography>
+                </div>
+            </Grid>
+        </Grid>
+    )
+
     return(
         <div ref={main_container_ref}>
             <Container maxWidth={'sm'} className={classes.tree}>
@@ -286,7 +310,8 @@ export function CourseTree(props) {
             <Container maxWidth={'xl'}>
                 <Paper elevation={3} onTouchStart={disableScroll} onTouchEnd={enableScroll} ref = {tree_container_ref}>
                     <Grid container className={classes.main_container}>
-                        {loading ? (<LoadingComponent/>) : (
+                        {loading ? <LoadingComponent/> :
+                            empty_tree ? <EmptyTreeComponent/> :
                             <Grid item xs={12} className={classes.tree_container}>
                                 <Tree
                                     initialDepth={1}
@@ -302,7 +327,7 @@ export function CourseTree(props) {
                                     onClick={nodeClicked}
                                 />
                             </Grid>
-                        )}
+                        }
                     </Grid>
                 </Paper>
             </Container>
