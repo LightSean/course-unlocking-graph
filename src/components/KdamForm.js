@@ -12,10 +12,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import {useHistory} from "react-router-dom";
-import {courseNumberToName} from "../utils/TreeBuilder";
-const all_courses_data = require('../data/coursesData/allCourses.json');
-const active_courses_data = require('../data/coursesData/activeCourses.json');
-
+import {kdam_url} from "../utils/Resources";
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -40,34 +37,32 @@ const starter_course_obj = {courseName: starter_course_string, courseNumber: '00
 
 export function KdamForm(props) {
     const classes = useStyles();
-    const [faculty, setFaculty] = useState('');
-    const [all_courses, setAllCourses] = useState(false);
+    const [faculty, setFaculty] = useState(localStorage.getItem('faculty') ? localStorage.getItem('faculty') : '');
+    const [all_courses, setAllCourses] = useState(localStorage.getItem('courses_type') ? localStorage.getItem('courses_type') : false);
     const [course_list, setCourseList] = useState([starter_course_obj, empty_course_obj])
-    const [courseObj, setCourseObj] = useState(starter_course_obj);
+    const [courseObj, setCourseObj] = useState(localStorage.getItem('course') ? JSON.parse(localStorage.getItem('course')) : starter_course_obj);
     const [faculty_required, setFacultyRequired] = useState(false);
     const [course_required, setCourseRequired] = useState(false);
+    const [loading, setLoading] = useState(false);
     const history = useHistory();
+
+    const fetchWithLoading = async (arg) => {
+        await setLoading(true);
+        let res = await fetch(arg);
+        let formatted = await res.json();
+        await setLoading(false);
+        return formatted;
+    }
+
     useEffect(() => {
-        const courses_data = all_courses ? all_courses_data : active_courses_data;
-        let faculty_from_list = {};
-        if(faculty !== ''){
-            let i;
-            for (i = 0; i < courses_data.length; i++){
-                faculty_from_list = courses_data[i].faculty;
-                if(faculty_from_list.name === faculty && faculty_from_list.courses){
-                    let res = faculty_from_list.courses.map((course) => {
-                        return {
-                            courseName: `${course.courseName} ${course.courseNumber}`,
-                            courseNumber: course.courseNumber
-                        }
-                    })
-                    // res.push(starter_course_obj);
-                    res.push(empty_course_obj);
-                    setCourseList(res);
-                    break;
-                }
+        const onEffect = async () => {
+            if(faculty !== ''){
+                let res = await fetchWithLoading(`${kdam_url}/all_courses_for_faculty?faculty=${faculty}&is_all_courses=${all_courses}`);
+                // formatted.push(empty_course_obj); may do it here and not in the backend later
+                setCourseList(res);
             }
         }
+        onEffect();
     }, [faculty, all_courses]);
 
     const searchClicked = () => {
@@ -90,14 +85,20 @@ export function KdamForm(props) {
     const changedFacultyOption = (e) => {
         setFaculty(e.target.value);
         setCourseObj(empty_course_obj);
+        localStorage.setItem('faculty', e.target.value);
+    }
+
+    const changedTypeOfCoursesFunction = async (e) => {
+        setAllCourses(e.target.value);
+        localStorage.setItem('courses_type', e.target.value);
+        let formatted = await fetchWithLoading(`${kdam_url}/course_exists?number=${courseObj.courseNumber}&is_all_courses=${!all_courses}`);
+        if(!formatted.exists){
+            setCourseObj(empty_course_obj);
+        }
     }
 
     const changedTypeOfCourses = (e) => {
-        const exists = courseNumberToName(courseObj.courseNumber, !all_courses);
-        if(!exists){
-            setCourseObj(empty_course_obj);
-        }
-        setAllCourses(e.target.value)
+        changedTypeOfCoursesFunction(e);
     }
 
     return(
@@ -109,7 +110,7 @@ export function KdamForm(props) {
                     </Typography>
                     <Grid container alignItems={'center'} direction={'column'}>
                         <Grid item>
-                            <FormControl error={faculty_required} required={faculty_required} className={classes.formControl}>
+                            <FormControl disabled={loading} error={faculty_required} required={faculty_required} className={classes.formControl}>
                                 <InputLabel>Faculty</InputLabel>
                                 <Select
                                     value={faculty}
@@ -133,7 +134,7 @@ export function KdamForm(props) {
                             </FormControl>
                         </Grid>
                         <Grid item>
-                            <FormControl className={classes.formControl}>
+                            <FormControl disabled={loading} className={classes.formControl}>
                                 <InputLabel>Type of courses</InputLabel>
                                 <Select
                                     value={all_courses}
@@ -147,6 +148,7 @@ export function KdamForm(props) {
                         <Grid item>
                             <FormControl error={course_required} required={course_required} className={classes.formControl}>
                                 <Autocomplete
+                                    disabled={loading}
                                     value={courseObj}
                                     fullWidth={true}
                                     autoHighlight={true}
@@ -154,11 +156,14 @@ export function KdamForm(props) {
                                     getOptionLabel={(option) => option.courseName}
                                     onChange={(e, val_obj) => {
                                         if(val_obj){
+                                            localStorage.setItem('course', JSON.stringify(val_obj));
                                             setCourseObj(val_obj);
                                         }else{
                                             if(faculty){
+                                                localStorage.setItem('course', JSON.stringify(empty_course_obj));
                                                 setCourseObj(empty_course_obj)
                                             }else{
+                                                localStorage.setItem('course', JSON.stringify(starter_course_obj));
                                                 setCourseObj(starter_course_obj)
                                             }
                                         }

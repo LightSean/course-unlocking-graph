@@ -46,7 +46,7 @@ export function Header(props) {
                 <Typography variant="h5" align="center" color="textSecondary" paragraph>
                     A little experiment using {<Link underline={'always'} color={'textSecondary'} href={'https://reactjs.org/'}>React.js</Link>} with
                     the {<Link underline={'always'} color={'textSecondary'} href={'https://material-ui.com/'}>Mateial-UI</Link>} framework.<br/> This
-                    application answers the question "After i will finish my course, what courses can i do?"
+                    application answers the question "After i will finish my course, what courses can i take?"
                 </Typography>
             </Container>
         </div>

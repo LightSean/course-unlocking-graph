@@ -4,7 +4,7 @@ import Tree from 'react-d3-tree';
 import {Button, Container, Typography} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
-import {calculateTree, courseNameToNumber, reverseFireFox, courseNumberToName} from "../utils/TreeBuilder";
+import {buildTree, reverseFireFox} from "../utils/TreeBuilder";
 import IconButton from '@material-ui/core/IconButton';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
@@ -13,7 +13,8 @@ import CenterFocusStrongIcon from '@material-ui/icons/CenterFocusStrong';
 import screenfull from "screenfull";
 import {useHistory} from 'react-router-dom'
 import queryString from 'query-string'
-
+import {kdam_url, ug_course_url} from "../utils/Resources";
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 // wow
 const mobileAndTabletCheck = () => {
@@ -62,11 +63,12 @@ export function CourseTree(props) {
     })
     const [tree_data, setTreeData] = useState({})
     const [current_course, setCurrentCourse] = useState('');
-    const [all_courses, setAllCourses] = useState('false')
     const [current_course_url, setCurrentCourseUrl] = useState('');
     const [zoom, setZoom] = useState(0.8)
+    const [loading, setLoading] = useState(false);
     const tree_container_ref = useRef(null);
     const main_container_ref = useRef(null);
+
 
     const toggleFullScreen = async () => {
         try{
@@ -79,8 +81,7 @@ export function CourseTree(props) {
         }
     }
     const nodeClicked = (nodeData, evt) => {
-        const course_number = courseNameToNumber(nodeData.name, all_courses);
-        const url = `https://ug3.technion.ac.il/rishum/course/${course_number}`;
+        const url = `${ug_course_url}/${nodeData.number}`;
         setCurrentCourse(reverseFireFox(nodeData.name));
         setCurrentCourseUrl(url);
     }
@@ -106,15 +107,18 @@ export function CourseTree(props) {
         }
     }
     const zoomOut = () => {
-        let old_zoom = zoom
-        if(old_zoom < 0.3){
-            setZoom(0)
+        if(zoom - 0.3 < 0.3){
+            setZoom(0);
         }else{
-            setZoom(old_zoom - 0.3)
+            setZoom(zoom - 0.3);
         }
     }
     const zoomIn = () => {
-        setZoom(zoom + 0.3)
+        if(zoom + 0.3 >= 1){
+            setZoom(1);
+        }else{
+            setZoom(zoom + 0.3);
+        }
     }
     function disableScroll() {
         let x=window.scrollX;
@@ -124,27 +128,33 @@ export function CourseTree(props) {
     function enableScroll() {
         window.onscroll=function(){};
     }
+    const fetchTree = async (num, is_all_courses) => {
+        let res = await fetch(`${kdam_url}/calculate_tree?number=${num}&is_all_courses=${is_all_courses}`);
+        return await res.json();
+    }
 
     useEffect( () => {
-        centerTree();
-        const parsed = queryString.parse(window.location.search)
-        if(!parsed || !parsed.num){
-            alert('problem with getting course number. please choose course again');
-            history.push(`${process.env.PUBLIC_URL}/`);
-            return;
+        const onFirstRender = async () => {
+            setLoading(true);
+            centerTree();
+            let parsed = queryString.parse(window.location.search)
+            if(!parsed || !parsed.num){
+                alert('problem with getting course number. please choose course again');
+                history.push(`${process.env.PUBLIC_URL}/`);
+                return;
+            }
+            if(!parsed.allcourses){
+                alert('problem getting type of courses preferences. looking only at active courses by default');
+                parsed.allcourses = 'false'
+            }
+            let tree_data = await fetchTree(parsed.num, parsed.allcourses);
+            let res = buildTree(tree_data, true);
+            setTreeData(res);
+            window.addEventListener('resize', centerTree);
+            setLoading(false);
         }
-        if(!courseNumberToName(parsed.num, parsed.allcourses)){
-            alert('problem with finding course based on course number. please choose course again');
-            history.push(`${process.env.PUBLIC_URL}/`);
-            return;
-        }
-        if(!parsed.allcourses){
-            alert('problem getting type of courses preferences. looking only at active courses by default');
-        }
-        setAllCourses((old) => parsed.allcourses);
-        let res = calculateTree(parsed.num, {}, parsed.allcourses);
-        setTreeData(res);
-        window.addEventListener('resize', centerTree);
+
+        onFirstRender();
     }, [history]);
 
     const dark_styles = {
@@ -219,6 +229,19 @@ export function CourseTree(props) {
         },
     }
 
+    const LoadingComponent = () => (
+        <Grid item container  justify={'center'} xs={12} className={classes.tree_container}>
+            <Grid item xs={12} style={{marginTop: theme.spacing(1)}}>
+                <div style={{display: 'flex', flexDirection:'column', justifyContent: 'center', justifyItems: 'center'}}>
+                    <Typography style={{marginBottom: theme.spacing(1)}} variant="h5" align="center" color="textPrimary" >
+                        Building tree...
+                    </Typography>
+                    <CircularProgress style={{margin:'auto'}} color={'primary'}/>
+                </div>
+            </Grid>
+        </Grid>
+    )
+
     return(
         <div ref={main_container_ref}>
             <Container maxWidth={'sm'} className={classes.tree}>
@@ -263,21 +286,23 @@ export function CourseTree(props) {
             <Container maxWidth={'xl'}>
                 <Paper elevation={3} onTouchStart={disableScroll} onTouchEnd={enableScroll} ref = {tree_container_ref}>
                     <Grid container className={classes.main_container}>
-                        <Grid item xs={12} className={classes.tree_container}>
-                            <Tree
-                                initialDepth={0}
-                                styles={theme.palette.type === 'dark'? dark_styles : light_styles}
-                                translate={dimensions}
-                                data={tree_data}
-                                orientation={'vertical'}
-                                transitionDuration={0}
-                                separation={{siblings: 1.9, nonSiblings: 1.5}}
-                                textLayout={{textAnchor: "start", x: 15, y: 0, transform: undefined }}
-                                collapsible={true}
-                                zoom={zoom}
-                                onClick={nodeClicked}
-                            />
-                        </Grid>
+                        {loading ? (<LoadingComponent/>) : (
+                            <Grid item xs={12} className={classes.tree_container}>
+                                <Tree
+                                    initialDepth={1}
+                                    styles={theme.palette.type === 'dark'? dark_styles : light_styles}
+                                    translate={dimensions}
+                                    data={tree_data}
+                                    orientation={'vertical'}
+                                    transitionDuration={0}
+                                    separation={{siblings: 1.9, nonSiblings: 1.5}}
+                                    textLayout={{textAnchor: "start", x: 15, y: 0, transform: undefined }}
+                                    collapsible={true}
+                                    zoom={zoom}
+                                    onClick={nodeClicked}
+                                />
+                            </Grid>
+                        )}
                     </Grid>
                 </Paper>
             </Container>
