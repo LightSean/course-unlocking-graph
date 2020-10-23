@@ -92,6 +92,11 @@ export function CourseTree(props) {
     const gotoCourseClicked = () => {
         window.open(current_course_url, "_blank")
     }
+    const onGotoMouseDown = (e) => {
+        if(e.button === 1){
+            window.open(current_course_url, "_blank")
+        }
+    }
     const centerTree = async () => {
         if(tree_container_ref.current){
             const dimensions = tree_container_ref.current.getBoundingClientRect();
@@ -295,7 +300,7 @@ export function CourseTree(props) {
                             </Grid>
                         )}
                         <Grid item container justify={'center'} xs={12}>
-                            <Button onClick={gotoCourseClicked} variant="text" color="primary">
+                            <Button onClick={gotoCourseClicked} onMouseDown={onGotoMouseDown} variant="text" color="primary">
                                 {current_course === '' ? ('Clicking on node tree will give you a link') : (`עבור אל ${current_course}`)}
                             </Button>
                         </Grid>
