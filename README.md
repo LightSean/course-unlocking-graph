@@ -1,7 +1,7 @@
 # Kdam Tree Graph
 
 Kdan Tree Graph is a little experiment using React.js with the Mateial-UI framework.
-This application answers the question "After i will finish my course, what courses can i do?"
+This application answers the question "After i will finish my course, what courses can i take?"
 
 ### Demo
 [Demo on github pages](https://lightsean.github.io/course-unlocking-graph/)
@@ -14,4 +14,4 @@ This application answers the question "After i will finish my course, what cours
 
 ### Planning for future
  - Extend the app to more fucntions other then course trees.
- - Do calculations on backend server and expose RESTful API so this app can consume
+ - Do calculations on backend server and expose RESTful API so this app can consume - DONE
