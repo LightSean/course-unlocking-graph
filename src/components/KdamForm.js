@@ -85,6 +85,7 @@ export function KdamForm(props) {
     const changedFacultyOption = (e) => {
         setFaculty(e.target.value);
         setCourseObj(empty_course_obj);
+        localStorage.removeItem('course');
         localStorage.setItem('faculty', e.target.value);
     }
 
@@ -130,6 +131,7 @@ export function KdamForm(props) {
                                     <MenuItem value={'bio_and_food_eng'}>הנדסת ביוטכנולוגיה ומזון</MenuItem>
                                     <MenuItem value={'bio_med'}>הנדסה ביו-רפואית</MenuItem>
                                     <MenuItem value={'education'}>חינוך למדע וטכנולוגיה</MenuItem>
+                                    <MenuItem value={'architecture'}>ארכיטקטורה ובינוי ערים</MenuItem>
                                 </Select>
                             </FormControl>
                         </Grid>

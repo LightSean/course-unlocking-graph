@@ -48,6 +48,9 @@ const useStyles = makeStyles((theme) => ({
     low_button: {
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1)
+    },
+    sad_face: {
+        margin: theme.spacing(2)
     }
 }));
 
@@ -262,9 +265,10 @@ export function CourseTree(props) {
     const EmptyTreeComponent = () => (
         <Grid item container  justify={'center'} xs={12} className={classes.tree_container}>
             <Grid item xs={12} style={{marginTop: theme.spacing(1)}}>
-                <div style={{display: 'flex', flexDirection:'column', justifyContent: 'center', justifyItems: 'center'}}>
-                    <Typography style={{marginBottom: theme.spacing(1)}} variant="h5" align="center" color="textPrimary" >
-                        {current_course} is not kdam for anything. try a new search
+                <div style={{display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'center'}}>
+                    <img alt={'tree_graph_pic'} src={require(`../data/pics/sadFace.png`)} className={classes.sad_face}/>
+                    <Typography style={{marginBottom: theme.spacing(1)}} align={'center'} variant="h5" color="textSecondary" >
+                        Can't find what the course <br/> {current_course} <br/> Is kdam for. Try a new search
                     </Typography>
                 </div>
             </Grid>
