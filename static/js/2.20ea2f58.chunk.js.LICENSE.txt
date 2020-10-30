@@ -5,6 +5,24 @@ object-assign
 */
 
 /*!
+       Transformation Matrix v2.0
+       (c) Epistemex 2014-2015
+       www.epistemex.com
+       By Ken Fyrstenberg
+       Contributions by leeoniya.
+       License: MIT, header required.
+       */
+
+/*!
+   Transformation Matrix v2.0
+   (c) Epistemex 2014-2015
+   www.epistemex.com
+   By Ken Fyrstenberg
+   Contributions by leeoniya.
+   License: MIT, header required.
+   */
+
+/*!
  * The buffer module from node.js, for the browser.
  *
  * @author   Feross Aboukhadijeh <http://feross.org>
